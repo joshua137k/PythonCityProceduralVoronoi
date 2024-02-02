@@ -98,7 +98,7 @@ def generate_voronoi_diagram():
             end_point = vor.vertices[end_idx]
             
             roads.append((start_point, end_point))
-    r,casas = create_sub_voronoi(vor,80)
+    r,casas = create_sub_voronoi(vor,40)
     roads+=r
     
     
@@ -107,7 +107,11 @@ def generate_voronoi_diagram():
 
 # Gerando diagrama de Voronoi
 roads, casas = generate_voronoi_diagram()
-
+l = str(roads)
+l=l.replace("array","")
+f = open("roads.txt","w")
+f.write(l)
+f.close()
 running = True
 while running:
     screen.fill(WHITE)
