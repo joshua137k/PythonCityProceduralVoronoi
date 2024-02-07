@@ -25,6 +25,7 @@ def closest_point_on_line(point, line):
     else:
         return x1 + param * C, y1 + param * D
 
+
 def find_closest_line_to_point(point, polygon):
     min_distance = float('inf')
     closest_line = None
@@ -41,6 +42,7 @@ def find_closest_line_to_point(point, polygon):
 
     return closest_line
 
+
 def find_polygon_center(polygon):
     """ Encontra o centro de um polígono. """
     if not polygon:
@@ -48,6 +50,7 @@ def find_polygon_center(polygon):
     polygon = np.array(polygon)
     centroid = np.mean(polygon, axis=0)
     return tuple(centroid)
+
 
 def is_inside_polygon(x, y, vertices):
     """ Verifica se um ponto está dentro de um polígono. """
@@ -69,6 +72,7 @@ def is_inside_polygon(x, y, vertices):
         p1x, p1y = p2x, p2y
 
     return inside
+
 
 def grow_square_in_polygon(polygon):
     center = find_polygon_center(polygon)
@@ -96,3 +100,24 @@ def grow_square_in_polygon(polygon):
             break
 
     return square
+
+
+def generate_random_points_in_region(vertices, num_points):
+    """ Gera pontos aleatórios dentro de uma região delimitada. """
+    points = []
+    min_x = min(vertices, key=lambda x: x[0])[0]
+    max_x = max(vertices, key=lambda x: x[0])[0]
+    min_y = min(vertices, key=lambda x: x[1])[1]
+    max_y = max(vertices, key=lambda x: x[1])[1]
+    while len(points) < num_points:
+        x = np.random.randint(min_x, max_x)
+        y = np.random.randint(min_y, max_y)
+        if is_inside_polygon(x, y, vertices):
+            points.append([x, y])
+
+    return points
+
+
+
+
+

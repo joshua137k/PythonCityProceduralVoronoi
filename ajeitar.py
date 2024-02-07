@@ -1,69 +1,85 @@
-
-
 import pygame
-import re
+import math
+# Cores
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+
+# Tamanho da tela
+LARGURA, ALTURA = 800, 600
 
 # Inicialize o Pygame
 pygame.init()
 
-# Crie a janela/tela
-largura, altura = 800, 600
-tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Desenho de Pontos")
+def distancia_euclidiana(ponto1, ponto2):
+    x1, y1 = ponto1
+    x2, y2 = ponto2
+    distancia = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return distancia
 
-# Abra o arquivo e encontre os pontos
-with open("roads.txt", "r") as f:
-    conteudo = f.read()
-conteudo=conteudo.replace("array","")
-roads = eval(conteudo)
-
-
-l =""
-for i in roads:
-	a = str(i[0])
-	b=str(i[1])
-
-	a=a.replace("[","Vector2(").replace("]",")")
-	b=b.replace("[","Vector2(").replace("]",")")
-	c="["+a+"/"+b+"]"
-	
-
-	l+= c+"%"
+ 
+def ler_arquivo(nome_arquivo):
+    try:
+        with open(nome_arquivo, "r") as f:
+            conteudo = f.read()
+            return eval(conteudo)
+    except FileNotFoundError:
+        print("Arquivo não encontrado.")
+        return []
 
 
-l=l[:-1]
+def main():
+    # Crie a janela/tela
+    tela = pygame.display.set_mode((LARGURA, ALTURA))
+    pygame.display.set_caption("Desenho de Pontos")
 
-f = open("ro.txt","w")
-f.write(l)
-f.close()
+    # Leitura do arquivo e ordenação dos pontos
+    roads = ler_arquivo("roads.txt")
+    if not roads:
+        return
+
+    # Inicialização do arquivo de saída
+    l = "{"
+    for i,road in enumerate(roads):
+        l +=str(i)+":["
+        for r in road:
+            a = "'Vector2({},{})'".format(r[0][0], r[0][1])
+            b = "'Vector2({},{})'".format(r[1][0], r[1][1])
+            c = "[{},{}]".format(a, b)
+            l += c + ","
+        l = l[:-1]
+        l +="],"
+    l = l[:-1]
+    l+="}"
 
 
 
-font = pygame.font.Font(None, 36)  # Escolha a fonte e o tamanho desejados
+    with open("teste/ro.txt", "w") as f:
+        f.write(l)
 
+    # Fonte
+    font = pygame.font.Font(None, 36)
 
-def draw_voronoi_line(screen, start_point, end_point, color):
-    pygame.draw.line(screen, color, start_point, end_point)
+    # Loop principal do jogo
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
+        # Limpe a tela
 
-# Loop principal do jogo
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # Limpe a tela
-    tela.fill((255, 255, 255))
+        tela.fill(BRANCO)
 
     # Desenhe linhas entre os pontos
-    if len(roads) >= 2:
-        for i,road in enumerate(roads):
-            draw_voronoi_line(tela, road[0], road[1], (0,0,0))
-
+        for road in roads:
+            for r in road:
+                pygame.draw.line(tela, PRETO ,r[0], r[1])
 
     # Atualize a tela
-    pygame.display.flip()
+        pygame.display.flip()
 
-# Encerre o Pygame
-pygame.quit()
+    # Encerre o Pygame
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
