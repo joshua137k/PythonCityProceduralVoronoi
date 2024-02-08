@@ -1,18 +1,13 @@
-import pygame
-from scipy.spatial import Voronoi
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial import Voronoi, voronoi_plot_2d
 from areaQuad import *
-
-# Constantes
+# As funções auxiliares fornecidas no script original serão mantidas com modificações mínimas necessárias.
 WIDTH, HEIGHT = 1200, 800
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-
-pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Voronoi Diagram")
 
 reg = [(0,0),(WIDTH,0),(0,HEIGHT),(WIDTH,HEIGHT)]
+
+
 
 
 
@@ -66,11 +61,11 @@ def create_sub_voronoi(vor, num_points):
                 
 
     return roads,casas
-
+ 
 
 #função para gerar as estradas e casas
 def generate_voronoi_diagram():
-    points = generate_random_points_in_region(reg,60)
+    points = generate_random_points_in_region(reg,20)
     vor = Voronoi(points)
 
     roads = []
@@ -84,88 +79,38 @@ def generate_voronoi_diagram():
         if start_idx != -1 and end_idx != -1:
             point1 = vor.vertices[start_idx]
             point2 = vor.vertices[end_idx]
-            if is_inside_polygon(point1[0], point1[1], reg):
-                if is_inside_polygon(point2[0], point2[1], reg):
 
-                    r.append([list(point1), list(point2)])
-                else:
-                    if point2[0]<0:
-                        point2[0]=limit
-                    elif point2[0]>WIDTH:
-                        point2[0]=WIDTH-limit
+            r.append([list(point1), list(point2)])
 
-                    if point2[1]<0:
-                        point2[1]=limit
-                    elif point2[1]>HEIGHT:
-                        point2[1]=HEIGHT-limit
-
-                    r.append([list(point1), list(point2)])
-            else:
-                if point1[0]<0:
-                    point1[0]=limit
-                elif point1[0]>WIDTH:
-                    point1[0]=WIDTH-limit
-
-                if point1[1]<0:
-                    point1[1]=limit
-                elif point1[1]>HEIGHT:
-                    point1[1]=HEIGHT-limit
-
-                r.append([list(point1), list(point2)])
 
     roads.append(r)
-    r,casas = create_sub_voronoi(vor,80)
+    r,casas = create_sub_voronoi(vor,20)
     roads+=r
     
     
 
     return roads, casas
 
-# Gerando diagrama de Voronoi
-roads, casas = generate_voronoi_diagram()
 
 
-
-l = "{"
-for i,road in enumerate(roads):
-    l +=str(i)+":["
-    for r in road:
-        a = "'Vector2({},{})'".format(r[0][0], r[0][1])
-        b = "'Vector2({},{})'".format(r[1][0], r[1][1])
-        c = "[{},{}]".format(a, b)
-        l += c + ","
-    l = l[:-1]
-    l +="],"
-l = l[:-1]
-l+="}"
-with open("teste/ro.txt", "w") as f:
-    f.write(l)
-
-'''
-l = str(roads)
-f = open("roads.txt","w")
-f.write(l)
-f.close()
-'''
-running = True
-
-while running:
-    screen.fill(WHITE)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
+# Funções modificadas ou adicionais para trabalhar com Matplotlib
+def plot_voronoi_diagram(roads, casas):
+    fig, ax = plt.subplots(figsize=(12, 8))
     # Desenhando estradas
     for road in roads:
         for r in road:
-            pygame.draw.line(screen, BLACK, r[0], r[1])
-
+            ax.plot([r[0][0], r[1][0]], [r[0][1], r[1][1]], color='black')
     # Desenhando casas
     for casa in casas:
         if casa is not None:
-            pygame.draw.polygon(screen, RED, casa)
+            polygon = plt.Polygon(casa, color='red', fill=None, edgecolor='red')
+            ax.add_patch(polygon)
+    ax.set_xlim(0, WIDTH)
+    ax.set_ylim(0, HEIGHT)
+    plt.show()
 
-    pygame.display.flip()
-
-pygame.quit()
+# Gerando diagrama de Voronoi
+roads, casas = generate_voronoi_diagram()
+exportGodot(roads)
+# Plotando o diagrama de Voronoi com Matplotlib
+plot_voronoi_diagram(roads, casas)

@@ -1,5 +1,7 @@
 import pygame
 import math
+import time
+import numpy as np
 # Cores
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
@@ -10,13 +12,7 @@ LARGURA, ALTURA = 800, 600
 # Inicialize o Pygame
 pygame.init()
 
-def distancia_euclidiana(ponto1, ponto2):
-    x1, y1 = ponto1
-    x2, y2 = ponto2
-    distancia = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    return distancia
 
- 
 def ler_arquivo(nome_arquivo):
     try:
         with open(nome_arquivo, "r") as f:
@@ -61,6 +57,7 @@ def main():
 
     # Loop principal do jogo
     running = True
+    t=1
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -70,11 +67,16 @@ def main():
 
         tela.fill(BRANCO)
 
+        if t>len(roads[0]):
+            t=1
+
     # Desenhe linhas entre os pontos
         for road in roads:
-            for r in road:
-                pygame.draw.line(tela, PRETO ,r[0], r[1])
+            for r in road[:int(t)]:
 
+                pygame.draw.line(tela, PRETO ,r[0], r[1])
+            break
+        t+=0.01
     # Atualize a tela
         pygame.display.flip()
 

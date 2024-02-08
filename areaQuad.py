@@ -121,3 +121,22 @@ def generate_random_points_in_region(vertices, num_points):
 
 
 
+
+
+
+
+def exportGodot(roads):
+    l = "{"
+    for i,road in enumerate(roads):
+        l +=str(i)+":["
+        for r in road:
+            a = "'Vector2({},{})'".format(r[0][0], r[0][1])
+            b = "'Vector2({},{})'".format(r[1][0], r[1][1])
+            c = "[{},{}]".format(a, b)
+            l += c + ","
+        l = l[:-1]
+        l +="],"
+    l = l[:-1]
+    l+="}"
+    with open("teste/ro.txt", "w") as f:
+        f.write(l)

@@ -44,8 +44,13 @@ func _draw_primitive(
 
 func draw_line(vertices: Array, w:int = 1, color: Color = default_color) -> void:
 	#_draw_primitive(Mesh.PRIMITIVE_LINE_STRIP, vertices, color)
+
 	for i in vertices:
+
 		draw_rectangle(i[0],i[1],w,default_color)
+
+
+
 
 
 func draw_rectangle(start: Vector3, end: Vector3, width: float, color: Color = default_color) -> void:
